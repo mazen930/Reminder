@@ -38,6 +38,7 @@ public class RemindersDbAdapter {
 
     public RemindersDbAdapter(Context ctx) {
         this.mCtx = ctx;
+        open();
     }
     //open
     public void open() throws SQLException {
@@ -95,7 +96,8 @@ public class RemindersDbAdapter {
     }
     //TODO implement the function deleteReminderById() to delete a certain reminder given its id
     public void deleteReminderById(int nId) {
-        mDb.rawQuery("Delete from "+TABLE_NAME+" where "+COL_ID+" = "+nId,null);
+        mDb.delete(TABLE_NAME,COL_ID+" = ?",new String[] {Integer.toString(nId)});
+        //Cursor x=mDb.rawQuery("Delete from "+TABLE_NAME+" where "+COL_ID+" = "+nId+"",null);
     }
 
     //TODO implement the function deleteAllReminders() to delete all reminders

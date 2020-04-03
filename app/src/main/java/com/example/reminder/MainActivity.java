@@ -5,7 +5,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,16 +21,23 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ListView listReminders;
+    private ArrayList<Integer> id = new ArrayList<Integer>();
     private ArrayList<String> reminders = new ArrayList<String>();
     private ArrayList<Boolean> important = new ArrayList<Boolean>();
     private MyListAdapter adapter;
+
+    RemindersDbAdapter remindersDbAdapter;
+    //RemindersSimpleCursorAdapter remindersSimpleCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminders);
 
+        remindersDbAdapter=new RemindersDbAdapter(this);
+        //remindersSimpleCursorAdapter=new RemindersSimpleCursorAdapter(this,);
         //TODO: read reminders and important from database
+        updateData();
         adapter = new MyListAdapter(this, reminders, important);
         listReminders = (ListView) findViewById(R.id.reminders_list);
         listReminders.setAdapter(adapter);
@@ -76,8 +85,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO: add item in database
-                reminders.add(editTextReminder.getText().toString());
-                important.add(checkBoxImportant.isChecked());
+                //reminders.add(editTextReminder.getText().toString());
+                //important.add(checkBoxImportant.isChecked());
+                remindersDbAdapter.createReminder(editTextReminder.getText().toString(),checkBoxImportant.isChecked());
+                updateData();
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -106,8 +117,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO: update item in database
-                reminders.set(index, editTextReminder.getText().toString());
-                important.set(index, checkBoxImportant.isChecked());
+                remindersDbAdapter.updateReminder(new Reminder(id.get(index),editTextReminder.getText().toString(),checkBoxImportant.isChecked()? 1:0));
+                //reminders.set(index, editTextReminder.getText().toString());
+                //important.set(index, checkBoxImportant.isChecked());
+                updateData();
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -132,12 +145,27 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
                     //TODO: remove item from database
-                    reminders.remove(position);
+                    //reminders.remove(position);
+                    remindersDbAdapter.deleteReminderById(id.get(position));
+                    updateData();
                     adapter.notifyDataSetChanged();
                 }
             }
         });
         AlertDialog rowMenuDialog = builder.create();
         rowMenuDialog.show();
+    }
+    public void updateData(){
+        id.clear();
+        reminders.clear();
+        important.clear();
+        Cursor fetchedData=remindersDbAdapter.fetchAllReminders();
+        if(fetchedData.getCount()>0){
+            while(fetchedData.moveToNext()){
+                id.add(Integer.parseInt(fetchedData.getString(0)));
+                reminders.add(fetchedData.getString(1));
+                important.add(Integer.parseInt(fetchedData.getString(2)) ==1 ?true:false);
+            }
+        }
     }
 }

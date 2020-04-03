@@ -32,9 +32,9 @@ public class MyListAdapter extends ArrayAdapter<String> {
         View reputationColor = (View) rowView.findViewById(R.id.reputationColor);
 
         if(important.get(position))
-            reputationColor.setBackgroundColor(Color.RED);
+            reputationColor.setBackgroundColor(Color.YELLOW);
         else
-            reputationColor.setBackgroundColor(Color.BLACK);
+            reputationColor.setBackgroundColor(Color.GREEN);
         reminderText.setText(reminder.get(position));
 
         return rowView;

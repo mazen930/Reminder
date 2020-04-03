@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
  *//*
 
 
+
 public class RemindersSimpleCursorAdapter extends SimpleCursorAdapter {
 
     public RemindersSimpleCursorAdapter(Context context, int layout, Cursor c, String[]
@@ -51,5 +52,4 @@ public class RemindersSimpleCursorAdapter extends SimpleCursorAdapter {
         View listTab;
     }
 
-}
-*/
+}*/
